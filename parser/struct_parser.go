@@ -19,7 +19,7 @@ const (
 // to its struct primitive
 //
 // returns (parsedValue any, err error)
-func parsePropValue(prop, strValue string, s interface{}) (parsedValue any, err error) {
+func ParsePropValue(prop, strValue string, s interface{}) (parsedValue any, err error) {
 
 	field, err := getFieldByProp(prop, s, nil)
 
