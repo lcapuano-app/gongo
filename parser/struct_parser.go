@@ -1,4 +1,4 @@
-package gongo
+package parser
 
 import (
 	"errors"
@@ -15,7 +15,11 @@ const (
 	gongoTag = "gongo"
 )
 
-func ParsePropValue(prop, strValue string, s interface{}) (parsedValue any, err error) {
+// Uses a interface "s" to parse the string value, usually from a query url string,
+// to its struct primitive
+//
+// returns (parsedValue any, err error)
+func parsePropValue(prop, strValue string, s interface{}) (parsedValue any, err error) {
 
 	field, err := getFieldByProp(prop, s, nil)
 
@@ -30,6 +34,11 @@ func ParsePropValue(prop, strValue string, s interface{}) (parsedValue any, err 
 	return parseToPrimitive(field, strValue)
 }
 
+// Gets the struct field from a bson/json/gongo name
+//
+// eg: Name string `json:"name,omitempty,..."`
+//
+// returns Name reflect.StructField
 func getFieldByProp(prop string, s interface{}, rt reflect.Type) (field reflect.StructField, err error) {
 
 	props := strings.Split(prop, ".")
@@ -72,6 +81,11 @@ func getFieldByProp(prop string, s interface{}, rt reflect.Type) (field reflect.
 	return field, nil
 }
 
+// Just removes all "noise" from the struct field
+//
+// eg: Name string `json:"name,omitempty,..."`
+//
+// returns "name"
 func getPropValue(field reflect.StructField) (fieldname string) {
 	// use split to ignore tag "options" like omitempty, etc.
 
@@ -90,6 +104,8 @@ func getPropValue(field reflect.StructField) (fieldname string) {
 	return strings.Split(field.Tag.Get(jsonTag), ",")[0]
 }
 
+// Parses the string value (val) to the correspondin
+// field reflect from the given model
 func parseToPrimitive(field reflect.StructField, val string) (parsedValue any, err error) {
 
 	kind := field.Type.Kind()
